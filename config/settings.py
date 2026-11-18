@@ -129,4 +129,4 @@ MAILERS = {
 }
 
 #added manually
-AUTH_USER_MODEL = 'accpuunts.User'
+AUTH_USER_MODEL = 'accounts.User'

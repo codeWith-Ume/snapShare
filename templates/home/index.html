@@ -18,8 +18,8 @@
 
         <div class="nav-links">
             <a href="/">Home</a>
-            <a href="#">Login</a>
-            <a href="#">Sign Up</a>
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{ % url 'signup' %}">Sign Up</a>
         </div>
     </nav>
 
@@ -39,7 +39,7 @@
                 event pictures in one place.
             </p>
 
-            <a href="#" class="explore-btn">
+            <a href="{% url 'login' %}" class="explore-btn">
                 Explore Memories →
             </a>
 

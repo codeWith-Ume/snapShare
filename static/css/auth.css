@@ -100,3 +100,16 @@ body {
 .switch-page a:hover {
     text-decoration: underline;
 }
+
+.error-message {
+    color: #ff9999;
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.success-message {
+    color: #a8e6a1;
+    font-size: 14px;
+    margin-bottom: 20px;
+}

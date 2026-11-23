@@ -101,6 +101,19 @@
         grid-column: 1 / -1;
         margin-top: 60px;
     }
+    .back-home-btn {
+        color: white;
+        text-decoration: none;
+        font-size: 15px;
+        padding: 9px 15px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 6px;
+        transition: background 0.3s;
+    }
+
+    .back-home-btn:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
     </style>
 </head>
 <body>
@@ -109,12 +122,15 @@
     </video>
     
     <nav>
+        <a href="{% url 'home' %}" class="back-home-btn">
+            &larr; Back to Home
+        </a>
+
         <h2>Our Memories</h2>
 
         <a href="{% url 'add_event' %}" class="add-event-btn">
             + Add Event
         </a>
-
     </nav>
     <div class="events-container">
 

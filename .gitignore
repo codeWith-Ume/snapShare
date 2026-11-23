@@ -7,3 +7,12 @@ myenv/
 
 # Django files
 db.sqlite3
+
+#.env file
+.env
+# Local database backups and uploaded media
+*.backup
+media/
+media_backup/
+snapshare_data.json
+staticfiles/

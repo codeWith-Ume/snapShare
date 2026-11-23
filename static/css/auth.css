@@ -13,7 +13,7 @@ body {
     min-height: 100vh;
     background-image:
         linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
-        url("/static/images/login%26signup.jpg");;
+        url("/static/images/login%26signup.jpg");
 
     background-size: cover;
     background-position: center;
@@ -112,4 +112,30 @@ body {
     color: #a8e6a1;
     font-size: 14px;
     margin-bottom: 20px;
+}
+.forgot-password {
+    color: #e2c18c;
+    text-decoration: none;
+    font-size: 14px;
+    text-align: right;
+    margin-top: -10px;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+.forgot-password-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url("/static/images/login%26signup.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.forgot-password-box {
+    width: 350px;
+    text-align: center;
 }

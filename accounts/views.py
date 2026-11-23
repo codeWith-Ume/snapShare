@@ -1,12 +1,49 @@
-from django.shortcuts import render
-from django.contrib.auth import get_user_model
+from django.shortcuts import render, redirect
+from django.contrib.auth import get_user_model, authenticate, login, logout
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 
-# Create your views here.
 
 def login_view(request):
-    return render(request, 'accounts/login.html')
+
+    errors = []
+
+    if request.method == "POST":
+
+        email = request.POST.get("email", "").strip()
+        password = request.POST.get("password", "")
+
+        user = authenticate(
+            request,
+            email=email,
+            password=password
+        )
+
+        if user is not None:
+
+            if not user.is_approved or not user.is_active:
+                errors.append("Your account is waiting for admin approval.")
+            else:
+                login(request, user)
+                request.session["login_success"] = "Login successful! Welcome back."
+                return redirect("home")
+
+        else:
+            User = get_user_model()
+            pending_user = User.objects.filter(email__iexact=email).first()
+
+            if pending_user and pending_user.check_password(password):
+                if not pending_user.is_approved or not pending_user.is_active:
+                    errors.append("Your account is waiting for admin approval.")
+                else:
+                    errors.append("Invalid email or password.")
+            else:
+                errors.append("Invalid email or password.")
+
+    return render(request, "accounts/login.html", {
+        "errors": errors
+    })
+
 
 def signup_view(request):
     User = get_user_model()
@@ -21,19 +58,18 @@ def signup_view(request):
         password = request.POST.get("password", "")
         confirm_password = request.POST.get("confirm_password", "")
 
-        # Check full name
         if not full_name:
             errors.append("Please enter your full name.")
 
-        # Check whether email already exists
+        if not email:
+            errors.append("Please enter your email.")
+
         if User.objects.filter(email__iexact=email).exists():
             errors.append("This email is already registered.")
 
-        # Check passwords
         if password != confirm_password:
             errors.append("Passwords do not match.")
 
-        # Validate password strength
         user = User(email=email, first_name=full_name)
 
         try:
@@ -41,17 +77,26 @@ def signup_view(request):
         except ValidationError as e:
             errors.extend(e.messages)
 
-        # Create account if there are no errors
         if not errors:
             user.set_password(password)
-            user.is_active = False
-            user.is_email_verified = False
-            user.is_approved = False
-            user.save()
+            user.is_email_verified = True
 
-            success = "Your account has been created! Email verification will be available soon."
+            if email.lower().endswith("@navgurukul.org"):
+                user.is_active = True
+                user.is_approved = True
+                success = "Account created successfully! You can now login."
+            else:
+                user.is_active = False
+                user.is_approved = False
+                success = "Your signup request has been submitted. Please wait for admin approval."
+
+            user.save()
 
     return render(request, "accounts/signup.html", {
         "errors": errors,
         "success": success
     })
+
+def logout_view(request):
+    logout(request)
+    return redirect("home")

@@ -1,6 +1,5 @@
-from django.db import models
 
-# Create your models here.
+from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 
@@ -21,6 +20,8 @@ class UserManager(BaseUserManager):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("is_active", True)
+        extra_fields.setdefault("is_approved", True)
+        extra_fields.setdefault("is_email_verified", True)
 
         return self.create_user(email, password, **extra_fields)
 

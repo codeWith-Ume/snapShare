@@ -6,6 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Login | snapShare</title>
 
     <link rel="stylesheet" href="{% static 'css/auth.css' %}">
@@ -18,10 +19,33 @@
             <h1>Welcome Back!</h1>
             <p>Login to explore your campus memories.</p>
 
-            <form>
-                <input type="email" placeholder="Email Address" required>
-                <input type="password" placeholder="Password" required>
+            {% if errors %}
+                <div class="error-message">
+                    {% for error in errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
 
+            <form method="POST">
+                {% csrf_token %}
+
+                <input
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
+                    required
+                >
+
+                <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    required
+                >
+                <a href="{% url 'password_reset' %}" class="forgot-password">
+                    Forgot Password?
+                </a>
                 <button type="submit">Login</button>
             </form>
 

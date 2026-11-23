@@ -226,6 +226,10 @@
                     Capture Photo
                 </button>
 
+                <button class="upload-btn" type="button" onclick="switchCamera()">
+                    Switch Camera
+                </button>
+
                 <canvas id="camera-canvas" style="display: none;"></canvas>
 
                 <img id="captured-preview" style="display: none; max-width: 85%; max-height: 60vh;">
@@ -294,6 +298,7 @@
 
 <script>
 let cameraStream = null;
+let currentFacingMode = "environment";
 let capturedBlob = null;
 let previewObjectUrl = null;
 
@@ -326,23 +331,49 @@ function closePhoto() {
 
 // CAMERA
 
+async function startCamera() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+    }
+
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+            facingMode: { ideal: currentFacingMode }
+        },
+        audio: false
+    });
+
+    const video = document.getElementById('camera-video');
+    video.srcObject = cameraStream;
+
+    video.style.transform = "none";
+
 async function openCamera() {
     try {
-        cameraStream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: "environment" },
-            audio: false
-        });
-
-        document.getElementById('camera-video').srcObject = cameraStream;
+        await startCamera();
 
         document.getElementById('camera-video').style.display = 'block';
         document.getElementById('captured-preview').style.display = 'none';
         document.getElementById('upload-captured').style.display = 'none';
-
         document.getElementById('camera-modal').classList.add('active');
 
     } catch (error) {
         alert("Unable to access the camera. Please allow camera permission.");
+        console.error(error);
+    }
+}
+
+async function switchCamera() {
+    currentFacingMode =
+        currentFacingMode === "environment" ? "user" : "environment";
+
+    try {
+        await startCamera();
+    } catch (error) {
+        currentFacingMode =
+            currentFacingMode === "environment" ? "user" : "environment";
+
+        alert("Unable to switch camera.");
         console.error(error);
     }
 }
@@ -363,8 +394,6 @@ function capturePhoto() {
     canvas.height = video.videoHeight;
 
     const context = canvas.getContext('2d');
-    context.translate(canvas.width, 0);
-    context.scale(-1, 1);
     context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
     canvas.toBlob(function(blob) {

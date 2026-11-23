@@ -199,6 +199,21 @@
         #camera-modal .upload-btn {
             min-width: 150px;
         }
+        .back-btn {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            margin-bottom: 18px;
+            padding: 9px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 6px;
+            transition: background 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 
@@ -206,10 +221,14 @@
 
     <div class="event-header">
 
-        <div class="event-details">
-            <h1>{{ event.name }}</h1>
-            <p>{{ event.date|date:"d F Y" }}</p>
-        </div>
+            <div class="event-details">
+                <a href="{% url 'moments_home' %}" class="back-btn">
+                    &larr; Back to Moments
+                </a>
+
+                <h1>{{ event.name }}</h1>
+                <p>{{ event.date|date:"d F Y" }}</p>
+            </div>
 
         <div class="upload-options">
 

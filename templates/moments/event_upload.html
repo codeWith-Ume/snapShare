@@ -302,7 +302,10 @@ let previewObjectUrl = null;
 
 function openPhoto(imageUrl, deleteUrl, canDelete) {
     document.getElementById('preview-image').src = imageUrl;
-    document.getElementById('save-photo').href = imageUrl;
+    document.getElementById('save-photo').href = imageUrl.replace(
+        '/upload/',
+        '/upload/fl_attachment/'
+    );
 
     const deleteForm = document.getElementById('delete-form');
 

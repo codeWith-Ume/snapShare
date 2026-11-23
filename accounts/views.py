@@ -45,6 +45,7 @@ def login_view(request):
     })
 
 
+
 def signup_view(request):
     User = get_user_model()
 
@@ -84,18 +85,24 @@ def signup_view(request):
             if email.lower().endswith("@navgurukul.org"):
                 user.is_active = True
                 user.is_approved = True
-                success = "Account created successfully! You can now login."
+                user.save()
+
+                login(request, user)
+                request.session["login_success"] = "Account created successfully! Welcome."
+                return redirect("home")
+
             else:
                 user.is_active = False
                 user.is_approved = False
-                success = "Your signup request has been submitted. Please wait for admin approval."
+                user.save()
 
-            user.save()
+                success = "Your signup request has been submitted. Please wait for admin approval."
 
     return render(request, "accounts/signup.html", {
         "errors": errors,
         "success": success
     })
+
 
 def logout_view(request):
     logout(request)

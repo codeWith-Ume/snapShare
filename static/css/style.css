@@ -99,3 +99,33 @@ body {
 .explore-btn:hover {
     background: #e0bb83;
 }
+/* Mobile Navbar Fix */
+@media (max-width: 600px) {
+
+    .navbar {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 18px 5%;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .nav-links {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .nav-links a {
+        font-size: 14px;
+    }
+
+    .nav-links span {
+        font-size: 13px;
+    }
+
+}

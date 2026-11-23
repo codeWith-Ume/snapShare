@@ -1,0 +1,485 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event - Our Memories</title>
+
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-image: url("/static/images/event_background.jpeg");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 30px 40px;
+        }
+
+        .event-details {
+            text-align: left;
+        }
+
+        .event-details h1 {
+            margin: 0 0 10px;
+            font-size: 30px;
+        }
+
+        .event-details p {
+            margin: 0;
+            font-size: 16px;
+        }
+
+        .upload-options {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .upload-form {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .upload-btn {
+            padding: 13px 22px;
+            border: 1px solid white;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .upload-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .file-input {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+        }
+
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 18px;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 25px auto 0;
+        }
+
+        .photo-item {
+            height: 220px;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        @media (max-width: 700px) {
+            .event-header {
+                flex-direction: column;
+                gap: 25px;
+                padding: 25px 20px;
+            }
+
+            .upload-options {
+                flex-wrap: wrap;
+            }
+
+            .upload-form {
+                flex-wrap: wrap;
+            }
+
+            .photo-gallery {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                padding: 15px;
+            }
+
+            .photo-item {
+                height: 160px;
+            }
+        }
+        .photo-item img {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .photo-item img:hover {
+            transform: scale(1.03);
+        }
+
+        .photo-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.92);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .photo-modal.active {
+            display: flex;
+        }
+
+        .photo-modal > img {
+            max-width: 85%;
+            max-height: 75vh;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            font-size: 40px;
+            cursor: pointer;
+        }
+
+        .photo-actions {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .photo-actions a,
+        .photo-actions button {
+            padding: 12px 22px;
+            border: 1px solid white;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            text-decoration: none;
+            font-size: 15px;
+            cursor: pointer;
+        }
+        #camera-modal video {
+            width: 85%;
+            max-width: 600px;
+            max-height: 65vh;
+            border-radius: 12px;
+            background: black;
+            object-fit: contain;
+        }
+
+        #camera-modal {
+            gap: 18px;
+        }
+        #camera-video {
+            transform: scaleX(-1);
+        }
+
+        #captured-preview {
+            border-radius: 12px;
+            object-fit: contain;
+        }
+
+        #camera-modal .upload-btn {
+            min-width: 150px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="event-header">
+
+        <div class="event-details">
+            <h1>{{ event.name }}</h1>
+            <p>{{ event.date|date:"d F Y" }}</p>
+        </div>
+
+        <div class="upload-options">
+
+            <button class="upload-btn" type="button" onclick="openCamera()">
+                Camera
+            </button>
+
+            <div id="camera-modal" class="photo-modal">
+                <span class="close-modal" onclick="closeCamera()">&times;</span>
+
+                <video id="camera-video" autoplay playsinline></video>
+
+                <button class="upload-btn" type="button" onclick="capturePhoto()">
+                    Capture Photo
+                </button>
+
+                <canvas id="camera-canvas" style="display: none;"></canvas>
+
+                <img id="captured-preview" style="display: none; max-width: 85%; max-height: 60vh;">
+
+                <button id="upload-captured" class="upload-btn" type="button"
+                    onclick="uploadCapturedPhoto()" style="display: none;">
+                    Upload Photo
+                </button>
+            </div>
+
+            <form method="POST" enctype="multipart/form-data" class="upload-form">
+                {% csrf_token %}
+
+                <input
+                    type="file"
+                    name="images"
+                    id="image-input"
+                    class="file-input"
+                    accept="image/*"
+                    multiple
+                    required
+                    onchange="this.form.submit()"
+                >
+
+                <label for="image-input" class="upload-btn">
+                    Upload from Files
+                </label>
+
+            </form>
+
+        </div>
+    </div>
+
+
+    <div class="photo-gallery">
+        {% for photo in photos %}
+            <div class="photo-item">
+                <img
+                    src="{{ photo.image.url }}"
+                    alt="Event Photo"
+                    onclick="openPhoto(
+                        '{{ photo.image.url }}',
+                        '{% url 'delete_photo' photo.id %}',
+                        {% if photo.uploaded_by == request.user %}true{% else %}false{% endif %}
+                    )"
+                >
+            </div>
+        {% empty %}
+            <p>No photos uploaded yet.</p>
+        {% endfor %}
+    </div>
+
+    <div id="photo-modal" class="photo-modal">
+        <span class="close-modal" onclick="closePhoto()">&times;</span>
+
+        <img id="preview-image" src="" alt="Preview">
+
+        <div class="photo-actions">
+            <a id="save-photo" href="" download>Save Photo</a>
+            <form id="delete-form" method="POST" style="display: none;">
+                {% csrf_token %}
+                <button type="submit">Delete Photo</button>
+            </form>
+        </div>
+    </div>
+
+<script>
+let cameraStream = null;
+let capturedBlob = null;
+let previewObjectUrl = null;
+
+
+// PHOTO PREVIEW
+
+function openPhoto(imageUrl, deleteUrl, canDelete) {
+    document.getElementById('preview-image').src = imageUrl;
+    document.getElementById('save-photo').href = imageUrl;
+
+    const deleteForm = document.getElementById('delete-form');
+
+    if (canDelete) {
+        deleteForm.action = deleteUrl;
+        deleteForm.style.display = 'block';
+    } else {
+        deleteForm.style.display = 'none';
+    }
+
+    document.getElementById('photo-modal').classList.add('active');
+}
+
+function closePhoto() {
+    document.getElementById('photo-modal').classList.remove('active');
+}
+
+
+// CAMERA
+
+async function openCamera() {
+    try {
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: "environment" },
+            audio: false
+        });
+
+        document.getElementById('camera-video').srcObject = cameraStream;
+
+        document.getElementById('camera-video').style.display = 'block';
+        document.getElementById('captured-preview').style.display = 'none';
+        document.getElementById('upload-captured').style.display = 'none';
+
+        document.getElementById('camera-modal').classList.add('active');
+
+    } catch (error) {
+        alert("Unable to access the camera. Please allow camera permission.");
+        console.error(error);
+    }
+}
+
+
+// CAPTURE PHOTO
+
+function capturePhoto() {
+    const video = document.getElementById('camera-video');
+    const canvas = document.getElementById('camera-canvas');
+
+    if (!video.videoWidth || !video.videoHeight) {
+        alert("Camera is not ready. Please try again.");
+        return;
+    }
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const context = canvas.getContext('2d');
+    context.translate(canvas.width, 0);
+    context.scale(-1, 1);
+    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob(function(blob) {
+        if (!blob) {
+            alert("Unable to capture photo. Please try again.");
+            return;
+        }
+
+        capturedBlob = blob;
+
+        if (previewObjectUrl) {
+            URL.revokeObjectURL(previewObjectUrl);
+        }
+
+        previewObjectUrl = URL.createObjectURL(blob);
+
+        document.getElementById('captured-preview').src = previewObjectUrl;
+        document.getElementById('captured-preview').style.display = 'block';
+        document.getElementById('camera-video').style.display = 'none';
+        document.getElementById('upload-captured').style.display = 'block';
+
+    }, 'image/jpeg', 0.90);
+}
+
+
+// UPLOAD CAPTURED PHOTO
+
+async function uploadCapturedPhoto() {
+    if (!capturedBlob) {
+        alert("Please capture a photo first.");
+        return;
+    }
+    const uploadButton = document.getElementById('upload-captured');
+
+    if (uploadButton.disabled) {
+        return;
+    }
+
+    uploadButton.disabled = true;
+    uploadButton.textContent = 'Uploading...';
+
+    const csrfToken = document.querySelector(
+        'input[name="csrfmiddlewaretoken"]'
+    );
+
+    if (!csrfToken) {
+        uploadButton.disabled = false;
+        uploadButton.textContent = 'Upload Photo';
+
+        alert("Security token not found. Please refresh the page.");
+        return;
+    }
+
+    const formData = new FormData();
+
+    formData.append('images', capturedBlob, 'camera_photo.jpg');
+
+    try {
+        const response = await fetch(window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': csrfToken.value
+            }
+        });
+
+        if (response.ok) {
+            closeCamera();
+            window.location.reload();
+        } else {
+            uploadButton.disabled = false;
+            uploadButton.textContent = 'Upload Photo';
+
+            alert("Photo upload failed. Please try again.");
+            console.error("Upload failed:", response.status);
+        }
+
+    } catch (error) {
+        uploadButton.disabled = false;
+        uploadButton.textContent = 'Upload Photo';
+
+        alert("Something went wrong. Please try again.");
+        console.error(error);
+    }
+}
+
+
+// CLOSE CAMERA
+
+function closeCamera() {
+    if (cameraStream) {
+        cameraStream.getTracks().forEach(track => track.stop());
+        cameraStream = null;
+    }
+
+    document.getElementById('camera-modal').classList.remove('active');
+    document.getElementById('camera-video').srcObject = null;
+
+    document.getElementById('camera-video').style.display = 'block';
+    document.getElementById('captured-preview').style.display = 'none';
+    document.getElementById('upload-captured').style.display = 'none';
+
+    capturedBlob = null;
+
+    if (previewObjectUrl) {
+        URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = null;
+    }
+}
+
+
+// CLOSE PHOTO PREVIEW ON BACKGROUND CLICK
+
+document.getElementById('photo-modal').addEventListener('click', function(event) {
+    if (event.target === this) {
+        closePhoto();
+    }
+});
+</script>
+</body>
+</html>

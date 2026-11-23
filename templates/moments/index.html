@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Moments - snapShare</title>
+    <style>
+    body {
+        min-height: 100vh;
+    }
+    #background-video {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        z-index: -1;
+    }
+    nav {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    color: white;
+    }
+
+    .add-event-btn {
+        background: white;
+        color: black;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .events-container {
+    padding: 30px 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 25px;
+    }
+
+    .event-card {
+        background: rgba(24, 35, 45, 0.78);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        color: #F1F3F5;
+        padding: 25px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        transition: transform 0.2s, background 0.2s;
+    }
+    .event-card:hover {
+        transform: translateY(-5px);
+        background: rgba(24, 35, 45, 0.55);
+    }
+
+    .event-open {
+        color: #F1F3F5;
+        text-decoration: none;
+        display: block;
+    }
+
+    .event-card p {
+        color: #B8C5D0;
+    }
+
+    .event-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 18px;
+    }
+
+    .event-actions a,
+    .event-actions button {
+        padding: 8px 14px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        background: #333;
+        color: white;
+        font-size: 13px;
+    }
+
+    .event-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .event-card h3 {
+        margin: 0 0 12px;
+    }
+
+    .event-card p {
+        margin: 0;
+        color: #555;
+    }
+
+    .no-events {
+        color: white;
+        text-align: center;
+        grid-column: 1 / -1;
+        margin-top: 60px;
+    }
+    </style>
+</head>
+<body>
+    <video autoplay muted loop playsinline id="background-video">
+       <source src="/static/videos/moments_background.mp4" type="video/mp4">
+    </video>
+    
+    <nav>
+        <h2>Our Memories</h2>
+
+        <a href="{% url 'add_event' %}" class="add-event-btn">
+            + Add Event
+        </a>
+
+    </nav>
+    <div class="events-container">
+
+    {% for event in events %}
+
+        <div class="event-card">
+
+            <a href="{% url 'event_upload' event.id %}" class="event-open">
+                <h3>{{ event.name }}</h3>
+                <p>{{ event.date|date:"d F Y" }}</p>
+                <p>{{ event.photos.count }} Photos</p>
+            </a>
+
+            {% if event.created_by == request.user %}
+
+                <div class="event-actions">
+
+                    <a href="{% url 'edit_event' event.id %}">
+                        Edit Event
+                    </a>
+
+                    <form method="POST"
+                        action="{% url 'delete_event' event.id %}"
+                        onsubmit="return confirm('Are you sure you want to delete this event and all its photos?');">
+
+                        {% csrf_token %}
+
+                        <button type="submit">Delete Event</button>
+
+                    </form>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    {% empty %}
+
+        <p class="no-events">
+            No events yet. Be the first to add an event!
+        </p>
+
+    {% endfor %}
+
+    </div>
+</body>
+</html>

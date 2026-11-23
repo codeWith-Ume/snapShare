@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Event - snapShare</title>
+    <style>
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url("/static/images/event_background.jpeg");
+            background-size: cover;
+            background-position: center;
+            font-family: Arial, sans-serif;
+        }
+
+        .edit-container {
+            width: 350px;
+            padding: 30px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 18px;
+            box-sizing: border-box;
+        }
+
+        button, .back-btn {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 6px;
+            background: #333;
+            color: white;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="edit-container">
+        <h2>Edit Event</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <button type="submit">Save Changes</button>
+            <a href="{% url 'moments_home' %}" class="back-btn">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

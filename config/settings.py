@@ -153,21 +153,18 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 # Email
 # https://docs.djangoproject.com/en/6.1/topics/email/#topic-email-configuration
 # Email Configuration (Development)
+# Email Configuration (Brevo SMTP)
 
-DEFAULT_FROM_EMAIL = 'snapShare <noreply@snapshare.com>'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-MAILERS = {
-    'default': {
-        'BACKEND': 'django.core.mail.backends.smtp.EmailBackend',
-        'OPTIONS': {
-            'host': 'smtp-relay.brevo.com',
-            'port': 587,
-            'username': os.getenv('BREVO_SMTP_LOGIN'),
-            'password': os.getenv('BREVO_SMTP_KEY'),
-            'use_tls': True,
-        },
-    },
-}
+EMAIL_HOST = 'smtp-relay.brevo.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = os.getenv('BREVO_SMTP_LOGIN')
+EMAIL_HOST_PASSWORD = os.getenv('BREVO_SMTP_KEY')
+
+EMAIL_TIMEOUT = 10
 
 DEFAULT_FROM_EMAIL = os.getenv('BREVO_SENDER_EMAIL')
 

@@ -130,3 +130,7 @@ body {
     }
 
 }
+.navbar .nav-links span {
+    color: #f2dfc2 !important;
+    font-weight: 500;
+}

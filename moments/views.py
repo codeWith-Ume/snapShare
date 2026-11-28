@@ -99,3 +99,4 @@ def delete_photo(request, photo_id):
     photo.delete()
 
     return redirect('event_upload', event_id=event_id)
+

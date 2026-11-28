@@ -1,4 +1,3 @@
-
 {% load static %}
 
 <!DOCTYPE html>
@@ -49,19 +48,76 @@
                     required
                 >
 
-                <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    required
-                >
+                <div class="password-hint">
+                    <p><strong>Password requirements:</strong></p>
 
-                <input
-                    type="password"
-                    name="confirm_password"
-                    placeholder="Confirm Password"
-                    required
-                >
+                    <ul>
+                        <li>At least 8 characters long.</li>
+                        <li>Should not be too similar to your emial.</li>
+                        <li>Should not be a commonly used password.</li>
+                        <li>Should not contain only numbers.</li>
+                    </ul>
+
+                    <p>
+                        <strong>Example:</strong> River@Cloud82
+                    </p>
+
+                    <small>Use your own unique password. Don't copy this example.</small>
+                </div>
+
+                <!-- Added password visibility toggle for the password field -->
+                <div class="password-field">
+                    <input
+                        type="password"
+                        id="signup-password"
+                        name="password"
+                        placeholder="Password"
+                        required
+                    >
+
+                    <!-- Added eye button to show or hide the password.
+                         The script below sets the correct icon on page load. -->
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-target="signup-password"
+                        aria-label="Show password"
+                    >
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
+
+
+                <!-- Added password visibility toggle for the confirm password field -->
+                <div class="password-field">
+                    <input
+                        type="password"
+                        id="confirm-password"
+                        name="confirm_password"
+                        placeholder="Confirm Password"
+                        required
+                    >
+
+                    <!-- Added eye button to show or hide the confirm password -->
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-target="confirm-password"
+                        aria-label="Show password"
+                    >
+                        <svg viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="2"
+                             stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </button>
+                </div>
 
                 <button type="submit">Sign Up</button>
             </form>
@@ -73,6 +129,39 @@
 
         </div>
     </div>
+
+    <!-- Added JavaScript to handle password show/hide functionality
+         (Google-style icons):
+         - Password hidden  -> crossed-out eye (click to show)
+         - Password visible -> open eye (click to hide)
+         data-target on each button says which input it controls,
+         so one script works for both password fields. -->
+    <script>
+        // SVG paths for the two icon states
+        const eyeOpen = `<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>`;
+        const eyeOff  = `<path d="M17.94 17.94A10.9 10.9 0 0 1 12 19c-6.4 0-10-7-10-7a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+
+        document.querySelectorAll(".password-toggle").forEach(button => {
+            const icon = button.querySelector("svg");
+
+            // On page load the password is hidden, so start with the crossed-out eye
+            icon.innerHTML = eyeOff;
+
+            button.addEventListener("click", function () {
+                const input = document.getElementById(this.dataset.target);
+
+                if (input.type === "password") {
+                    input.type = "text";             // show password
+                    icon.innerHTML = eyeOpen;        // open eye = visible
+                    this.setAttribute("aria-label", "Hide password");
+                } else {
+                    input.type = "password";         // hide password
+                    icon.innerHTML = eyeOff;         // crossed-out eye = hidden
+                    this.setAttribute("aria-label", "Show password");
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

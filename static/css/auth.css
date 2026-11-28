@@ -139,3 +139,85 @@ body {
     width: 350px;
     text-align: center;
 }
+
+/* Wrapper so the icon can sit inside the input */
+.password-field {
+    position: relative;
+    width: 100%;
+    margin-bottom: 18px;   /* move the input's bottom spacing here */
+}
+
+.password-field input {
+    width: 100%;
+    margin-bottom: 0;      /* spacing now comes from the wrapper */
+    padding-right: 48px;   /* room so text doesn't go under the icon */
+    box-sizing: border-box;
+}
+
+/* Eye button: overrides the general "button" style */
+.password-field .password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    margin: 0;
+
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #c49e63;        /* icon colour (matches your tan theme) */
+}
+
+.password-field .password-toggle:hover {
+    color: #fff;
+    background: transparent;
+}
+
+.password-field .password-toggle svg {
+    width: 20px;
+    height: 20px;
+}
+
+.forgot-link {
+    display: block;
+    align-self: flex-end;
+    color: #e2c18c;
+    text-decoration: none;
+    font-size: 13px;
+    margin-top: -8px;
+}
+
+.forgot-link:hover {
+    text-decoration: underline;
+}
+
+.password-hint{
+    font-size: 13px;
+    color:#c9c9c9 ;
+    text-align: left;
+    margin-top: -8px;
+    line-height: 1.6;    
+}
+
+.password-hint p{
+    margin: 4px 0;
+}
+
+.password-hint ul {
+    padding-left: 20px;
+    margin: 4px 0;
+}
+
+.password-hint small {
+    color: #e2c18c;
+}
